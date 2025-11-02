@@ -155,14 +155,14 @@ const MapGame = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-background/50 rounded-lg p-4 border-2 border-border">
+            <div className="bg-muted/30 rounded-lg p-4 border-2 border-border" style={{ minHeight: "500px" }}>
               <ComposableMap
                 projection="geoAzimuthalEqualArea"
                 projectionConfig={{
                   rotate: [-20.0, -52.0, 0],
                   scale: 800,
                 }}
-                style={{ width: "100%", height: "auto" }}
+                style={{ width: "100%", height: "500px" }}
               >
                 <Geographies geography={geoUrl}>
                   {({ geographies }) =>
@@ -178,25 +178,25 @@ const MapGame = () => {
                           style={{
                             default: {
                               fill: isCorrect !== null && isTarget 
-                                ? "hsl(var(--secondary))" 
+                                ? "#10b981" 
                                 : isSelected && isCorrect === false
-                                ? "hsl(var(--destructive))"
-                                : "hsl(var(--muted))",
-                              stroke: "hsl(var(--border))",
-                              strokeWidth: 0.5,
+                                ? "#ef4444"
+                                : "#cbd5e1",
+                              stroke: "#64748b",
+                              strokeWidth: 1,
                               outline: "none",
                             },
                             hover: {
-                              fill: isCorrect === null ? "hsl(var(--primary))" : undefined,
-                              stroke: "hsl(var(--border))",
-                              strokeWidth: 0.5,
+                              fill: isCorrect === null ? "#3b82f6" : undefined,
+                              stroke: "#64748b",
+                              strokeWidth: 1,
                               outline: "none",
                               cursor: isCorrect === null ? "pointer" : "default",
                             },
                             pressed: {
-                              fill: "hsl(var(--primary))",
-                              stroke: "hsl(var(--border))",
-                              strokeWidth: 0.5,
+                              fill: "#2563eb",
+                              stroke: "#64748b",
+                              strokeWidth: 1,
                               outline: "none",
                             },
                           }}
