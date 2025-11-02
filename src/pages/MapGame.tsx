@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { europeanCountries } from "@/data/countries";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, RotateCcw, MapPin } from "lucide-react";
+import { ArrowLeft, Trophy, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
-
-const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/continents/europe.json";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import GoogleMapGame from "@/components/GoogleMapGame";
 
 const MapGame = () => {
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0);
@@ -16,6 +16,8 @@ const MapGame = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [shuffledCountries, setShuffledCountries] = useState(europeanCountries);
+  const [apiKey, setApiKey] = useState("");
+  const [isApiKeySet, setIsApiKeySet] = useState(false);
 
   const startNewGame = () => {
     setShuffledCountries([...europeanCountries].sort(() => Math.random() - 0.5).slice(0, 10));
@@ -33,38 +35,23 @@ const MapGame = () => {
   const currentCountry = shuffledCountries[currentCountryIndex];
   const progress = ((currentCountryIndex + 1) / shuffledCountries.length) * 100;
 
-  // Mapowanie nazw krajów z naszej bazy do nazw w TopoJSON
-  const countryNameMap: { [key: string]: string } = {
-    "Polska": "Poland",
-    "Niemcy": "Germany",
-    "Francja": "France",
-    "Hiszpania": "Spain",
-    "Włochy": "Italy",
-    "Wielka Brytania": "United Kingdom",
-    "Szwecja": "Sweden",
-    "Norwegia": "Norway",
-    "Grecja": "Greece",
-    "Portugalia": "Portugal",
-    "Holandia": "Netherlands",
-    "Belgia": "Belgium",
-    "Austria": "Austria",
-    "Czechy": "Czech Republic",
-    "Dania": "Denmark",
-  };
-
-  const handleCountryClick = (geo: any) => {
+  const handleCountryClick = (countryName: string) => {
     if (isCorrect !== null) return;
 
-    const clickedCountryName = geo.properties.geounit || geo.properties.name;
-    const targetCountryName = countryNameMap[currentCountry.name];
+    setSelectedCountry(countryName);
     
-    setSelectedCountry(clickedCountryName);
-    
-    if (clickedCountryName === targetCountryName) {
+    if (countryName === currentCountry.name) {
       setIsCorrect(true);
       setScore(score + 1);
     } else {
       setIsCorrect(false);
+    }
+  };
+
+  const handleApiKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (apiKey.trim()) {
+      setIsApiKeySet(true);
     }
   };
 
@@ -77,6 +64,56 @@ const MapGame = () => {
       setGameOver(true);
     }
   };
+
+  // Jeśli nie ma API key, pokaż formularz
+  if (!isApiKeySet) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-secondary/10 via-background to-primary/10 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl">Google Maps API Key</CardTitle>
+            <CardDescription>
+              Aby korzystać z gry mapowej, potrzebujesz klucza API Google Maps.
+              Możesz go uzyskać na{" "}
+              <a
+                href="https://console.cloud.google.com/google/maps-apis"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Google Cloud Console
+              </a>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleApiKeySubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="apiKey">Klucz API</Label>
+                <Input
+                  id="apiKey"
+                  type="text"
+                  placeholder="Wklej tutaj swój klucz API"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex gap-4">
+                <Button type="submit" className="flex-1">
+                  Rozpocznij grę
+                </Button>
+                <Link to="/" className="flex-1">
+                  <Button type="button" variant="outline" className="w-full">
+                    Anuluj
+                  </Button>
+                </Link>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (gameOver) {
     const percentage = (score / shuffledCountries.length) * 100;
@@ -155,58 +192,12 @@ const MapGame = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-muted/30 rounded-lg p-4 border-2 border-border" style={{ minHeight: "500px" }}>
-              <ComposableMap
-                projection="geoAzimuthalEqualArea"
-                projectionConfig={{
-                  rotate: [-20.0, -52.0, 0],
-                  scale: 800,
-                }}
-                style={{ width: "100%", height: "500px" }}
-              >
-                <Geographies geography={geoUrl}>
-                  {({ geographies }) =>
-                    geographies.map((geo) => {
-                      const isSelected = selectedCountry === (geo.properties.geounit || geo.properties.name);
-                      const isTarget = (geo.properties.geounit || geo.properties.name) === countryNameMap[currentCountry.name];
-                      
-                      return (
-                        <Geography
-                          key={geo.rsmKey}
-                          geography={geo}
-                          onClick={() => handleCountryClick(geo)}
-                          style={{
-                            default: {
-                              fill: isCorrect !== null && isTarget 
-                                ? "#10b981" 
-                                : isSelected && isCorrect === false
-                                ? "#ef4444"
-                                : "#cbd5e1",
-                              stroke: "#64748b",
-                              strokeWidth: 1,
-                              outline: "none",
-                            },
-                            hover: {
-                              fill: isCorrect === null ? "#3b82f6" : undefined,
-                              stroke: "#64748b",
-                              strokeWidth: 1,
-                              outline: "none",
-                              cursor: isCorrect === null ? "pointer" : "default",
-                            },
-                            pressed: {
-                              fill: "#2563eb",
-                              stroke: "#64748b",
-                              strokeWidth: 1,
-                              outline: "none",
-                            },
-                          }}
-                        />
-                      );
-                    })
-                  }
-                </Geographies>
-              </ComposableMap>
-            </div>
+            <GoogleMapGame
+              currentCountry={currentCountry}
+              onCountryClick={handleCountryClick}
+              isCorrect={isCorrect}
+              apiKey={apiKey}
+            />
 
             {isCorrect !== null && (
               <div className={`mt-6 p-6 rounded-lg text-center ${
