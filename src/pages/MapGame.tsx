@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import GoogleMapGame from "@/components/GoogleMapGame";
+import SimpleMapGame from "@/components/GoogleMapGame";
 
 const MapGame = () => {
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0);
@@ -16,8 +16,6 @@ const MapGame = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [shuffledCountries, setShuffledCountries] = useState(europeanCountries);
-  const [apiKey, setApiKey] = useState("");
-  const [isApiKeySet, setIsApiKeySet] = useState(false);
 
   const startNewGame = () => {
     setShuffledCountries([...europeanCountries].sort(() => Math.random() - 0.5).slice(0, 10));
@@ -48,13 +46,6 @@ const MapGame = () => {
     }
   };
 
-  const handleApiKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (apiKey.trim()) {
-      setIsApiKeySet(true);
-    }
-  };
-
   const handleNext = () => {
     if (currentCountryIndex < shuffledCountries.length - 1) {
       setCurrentCountryIndex(currentCountryIndex + 1);
@@ -64,56 +55,6 @@ const MapGame = () => {
       setGameOver(true);
     }
   };
-
-  // Jeśli nie ma API key, pokaż formularz
-  if (!isApiKeySet) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary/10 via-background to-primary/10 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl">Google Maps API Key</CardTitle>
-            <CardDescription>
-              Aby korzystać z gry mapowej, potrzebujesz klucza API Google Maps.
-              Możesz go uzyskać na{" "}
-              <a
-                href="https://console.cloud.google.com/google/maps-apis"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Google Cloud Console
-              </a>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleApiKeySubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="apiKey">Klucz API</Label>
-                <Input
-                  id="apiKey"
-                  type="text"
-                  placeholder="Wklej tutaj swój klucz API"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex gap-4">
-                <Button type="submit" className="flex-1">
-                  Rozpocznij grę
-                </Button>
-                <Link to="/" className="flex-1">
-                  <Button type="button" variant="outline" className="w-full">
-                    Anuluj
-                  </Button>
-                </Link>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   if (gameOver) {
     const percentage = (score / shuffledCountries.length) * 100;
@@ -192,11 +133,10 @@ const MapGame = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <GoogleMapGame
+            <SimpleMapGame
               currentCountry={currentCountry}
               onCountryClick={handleCountryClick}
               isCorrect={isCorrect}
-              apiKey={apiKey}
             />
 
             {isCorrect !== null && (

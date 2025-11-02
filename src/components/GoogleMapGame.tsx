@@ -1,9 +1,7 @@
-import { useCallback, useState } from "react";
-import { GoogleMap, useJsApiLoader, Data } from "@react-google-maps/api";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
-interface GoogleMapGameProps {
+interface SimpleMapGameProps {
   currentCountry: {
     name: string;
     flag: string;
@@ -11,142 +9,114 @@ interface GoogleMapGameProps {
   };
   onCountryClick: (countryName: string) => void;
   isCorrect: boolean | null;
-  apiKey: string;
 }
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "500px",
+// Mapowanie polskich nazw na nazwy krajów w GeoJSON
+const countryNameMap: { [key: string]: string[] } = {
+  "Polska": ["Poland"],
+  "Niemcy": ["Germany"],
+  "Francja": ["France"],
+  "Hiszpania": ["Spain"],
+  "Włochy": ["Italy"],
+  "Wielka Brytania": ["United Kingdom"],
+  "Szwecja": ["Sweden"],
+  "Norwegia": ["Norway"],
+  "Grecja": ["Greece"],
+  "Portugalia": ["Portugal"],
+  "Holandia": ["Netherlands"],
+  "Belgia": ["Belgium"],
+  "Austria": ["Austria"],
+  "Czechy": ["Czech Republic", "Czechia"],
+  "Dania": ["Denmark"],
 };
 
-const center = {
-  lat: 54,
-  lng: 15,
-};
+const SimpleMapGame = ({ currentCountry, onCountryClick, isCorrect }: SimpleMapGameProps) => {
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
 
-// Mapowanie polskich nazw na kody ISO krajów
-const countryCodeMap: { [key: string]: string } = {
-  "Polska": "PL",
-  "Niemcy": "DE",
-  "Francja": "FR",
-  "Hiszpania": "ES",
-  "Włochy": "IT",
-  "Wielka Brytania": "GB",
-  "Szwecja": "SE",
-  "Norwegia": "NO",
-  "Grecja": "GR",
-  "Portugalia": "PT",
-  "Holandia": "NL",
-  "Belgia": "BE",
-  "Austria": "AT",
-  "Czechy": "CZ",
-  "Dania": "DK",
-};
-
-const GoogleMapGame = ({ currentCountry, onCountryClick, isCorrect, apiKey }: GoogleMapGameProps) => {
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [clickedFeature, setClickedFeature] = useState<google.maps.Data.Feature | null>(null);
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: apiKey,
-  });
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    setMap(map);
-
-    // Załaduj granice krajów europejskich
-    map.data.loadGeoJson(
-      "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
+  const handleCountryClick = (geo: any) => {
+    if (isCorrect !== null) return;
+    
+    const geoName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    setSelectedCountry(geoName);
+    
+    // Znajdź polską nazwę kraju
+    const polishName = Object.keys(countryNameMap).find(
+      key => countryNameMap[key].includes(geoName)
     );
+    
+    if (polishName) {
+      onCountryClick(polishName);
+    }
+  };
 
-    // Ustaw style dla krajów
-    map.data.setStyle((feature) => {
-      const isSelected = feature === clickedFeature;
-      const countryCode = feature.getProperty("ISO_A2");
-      const targetCountryCode = countryCodeMap[currentCountry.name];
+  const getCountryStyle = (geo: any) => {
+    const geoName = geo.properties.name || geo.properties.NAME || geo.properties.ADMIN;
+    const targetGeoNames = countryNameMap[currentCountry.name] || [];
+    const isTarget = targetGeoNames.includes(geoName);
+    const isSelected = geoName === selectedCountry;
+    const isHovered = geoName === hoveredCountry;
 
-      let fillColor = "#cbd5e1"; // default gray
-      
-      if (isCorrect !== null && countryCode === targetCountryCode) {
-        fillColor = "#10b981"; // green for correct
-      } else if (isSelected && isCorrect === false) {
-        fillColor = "#ef4444"; // red for wrong
-      } else if (isSelected && isCorrect === null) {
-        fillColor = "#3b82f6"; // blue for selected
-      }
+    let fill = "hsl(var(--muted))";
+    
+    if (isCorrect !== null && isTarget) {
+      fill = "hsl(142 76% 36%)"; // green for correct answer
+    } else if (isSelected && isCorrect === false) {
+      fill = "hsl(0 84% 60%)"; // red for wrong answer
+    } else if (isSelected && isCorrect === null) {
+      fill = "hsl(217 91% 60%)"; // blue for selected
+    } else if (isHovered && isCorrect === null) {
+      fill = "hsl(var(--primary))";
+    }
 
-      return {
-        fillColor: fillColor,
-        fillOpacity: 0.7,
-        strokeColor: "#64748b",
-        strokeWeight: 1,
-        cursor: isCorrect === null ? "pointer" : "default",
-      };
-    });
-
-    // Dodaj event listener dla kliknięć
-    map.data.addListener("click", (event: google.maps.Data.MouseEvent) => {
-      if (isCorrect !== null) return; // Nie pozwalaj na kliknięcia po odpowiedzi
-
-      const feature = event.feature;
-      setClickedFeature(feature);
-      
-      const countryName = feature.getProperty("ADMIN") || feature.getProperty("name");
-      const countryCode = feature.getProperty("ISO_A2");
-      
-      // Znajdź polską nazwę kraju na podstawie kodu
-      const polishName = Object.keys(countryCodeMap).find(
-        key => countryCodeMap[key] === countryCode
-      );
-      
-      if (polishName) {
-        onCountryClick(polishName);
-      }
-    });
-
-    // Dodaj hover effect
-    map.data.addListener("mouseover", (event: google.maps.Data.MouseEvent) => {
-      if (isCorrect === null) {
-        map.data.overrideStyle(event.feature, { fillOpacity: 0.9 });
-      }
-    });
-
-    map.data.addListener("mouseout", (event: google.maps.Data.MouseEvent) => {
-      map.data.revertStyle();
-    });
-  }, [currentCountry, clickedFeature, isCorrect]);
-
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
-
-  if (!isLoaded) {
-    return (
-      <div className="w-full h-[500px] bg-muted/30 rounded-lg flex items-center justify-center">
-        <p className="text-muted-foreground">Ładowanie mapy...</p>
-      </div>
-    );
-  }
+    return {
+      fill,
+      stroke: "hsl(var(--border))",
+      strokeWidth: 0.5,
+      cursor: isCorrect === null ? "pointer" : "default",
+      outline: "none",
+    };
+  };
 
   return (
     <div className="bg-muted/30 rounded-lg overflow-hidden border-2 border-border">
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={center}
-        zoom={4}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-        options={{
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
-          minZoom: 3,
-          maxZoom: 6,
+      <ComposableMap
+        projection="geoAzimuthalEqualArea"
+        projectionConfig={{
+          rotate: [-10, -52, 0],
+          scale: 900,
         }}
-      />
+        width={800}
+        height={500}
+        style={{ width: "100%", height: "auto" }}
+      >
+        <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json">
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                onClick={() => handleCountryClick(geo)}
+                onMouseEnter={() => {
+                  if (isCorrect === null) {
+                    setHoveredCountry(geo.properties.name || geo.properties.NAME || geo.properties.ADMIN);
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredCountry(null);
+                }}
+                style={{
+                  default: getCountryStyle(geo),
+                  hover: getCountryStyle(geo),
+                  pressed: getCountryStyle(geo),
+                }}
+              />
+            ))
+          }
+        </Geographies>
+      </ComposableMap>
     </div>
   );
 };
 
-export default GoogleMapGame;
+export default SimpleMapGame;
