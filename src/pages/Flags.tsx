@@ -126,7 +126,11 @@ const Flags = () => {
         <Card className="p-8">
           <CardContent className="space-y-8">
             <div className="text-center space-y-4">
-              <div className="text-9xl mx-auto w-fit">{currentCountry.flag}</div>
+              <img 
+                src={currentCountry.flag} 
+                alt={`Flaga ${currentCountry.name}`}
+                className="mx-auto w-full max-w-md h-auto rounded-lg shadow-lg"
+              />
               <h2 className="text-2xl font-bold">Jaki to kraj?</h2>
             </div>
 

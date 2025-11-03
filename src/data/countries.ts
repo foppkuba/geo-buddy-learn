@@ -1,3 +1,19 @@
+import polandFlag from "@/assets/flags/poland.png";
+import germanyFlag from "@/assets/flags/germany.png";
+import franceFlag from "@/assets/flags/france.png";
+import spainFlag from "@/assets/flags/spain.png";
+import italyFlag from "@/assets/flags/italy.png";
+import ukFlag from "@/assets/flags/uk.png";
+import swedenFlag from "@/assets/flags/sweden.png";
+import norwayFlag from "@/assets/flags/norway.png";
+import greeceFlag from "@/assets/flags/greece.png";
+import portugalFlag from "@/assets/flags/portugal.png";
+import netherlandsFlag from "@/assets/flags/netherlands.png";
+import belgiumFlag from "@/assets/flags/belgium.png";
+import austriaFlag from "@/assets/flags/austria.png";
+import czechFlag from "@/assets/flags/czech.png";
+import denmarkFlag from "@/assets/flags/denmark.png";
+
 export interface Country {
   id: string;
   name: string;
@@ -15,7 +31,7 @@ export const europeanCountries: Country[] = [
     id: "poland",
     name: "Polska",
     capital: "Warszawa",
-    flag: "🇵🇱",
+    flag: polandFlag,
     region: "Europa Środkowa",
     population: "38 mln",
     area: "312 696 km²",
@@ -26,7 +42,7 @@ export const europeanCountries: Country[] = [
     id: "germany",
     name: "Niemcy",
     capital: "Berlin",
-    flag: "🇩🇪",
+    flag: germanyFlag,
     region: "Europa Środkowa",
     population: "83 mln",
     area: "357 022 km²",
@@ -37,7 +53,7 @@ export const europeanCountries: Country[] = [
     id: "france",
     name: "Francja",
     capital: "Paryż",
-    flag: "🇫🇷",
+    flag: franceFlag,
     region: "Europa Zachodnia",
     population: "67 mln",
     area: "643 801 km²",
@@ -48,7 +64,7 @@ export const europeanCountries: Country[] = [
     id: "spain",
     name: "Hiszpania",
     capital: "Madryt",
-    flag: "🇪🇸",
+    flag: spainFlag,
     region: "Europa Południowa",
     population: "47 mln",
     area: "505 990 km²",
@@ -59,7 +75,7 @@ export const europeanCountries: Country[] = [
     id: "italy",
     name: "Włochy",
     capital: "Rzym",
-    flag: "🇮🇹",
+    flag: italyFlag,
     region: "Europa Południowa",
     population: "60 mln",
     area: "301 340 km²",
@@ -70,7 +86,7 @@ export const europeanCountries: Country[] = [
     id: "uk",
     name: "Wielka Brytania",
     capital: "Londyn",
-    flag: "🇬🇧",
+    flag: ukFlag,
     region: "Europa Zachodnia",
     population: "67 mln",
     area: "242 495 km²",
@@ -81,7 +97,7 @@ export const europeanCountries: Country[] = [
     id: "sweden",
     name: "Szwecja",
     capital: "Sztokholm",
-    flag: "🇸🇪",
+    flag: swedenFlag,
     region: "Europa Północna",
     population: "10 mln",
     area: "450 295 km²",
@@ -92,7 +108,7 @@ export const europeanCountries: Country[] = [
     id: "norway",
     name: "Norwegia",
     capital: "Oslo",
-    flag: "🇳🇴",
+    flag: norwayFlag,
     region: "Europa Północna",
     population: "5 mln",
     area: "385 207 km²",
@@ -103,7 +119,7 @@ export const europeanCountries: Country[] = [
     id: "greece",
     name: "Grecja",
     capital: "Ateny",
-    flag: "🇬🇷",
+    flag: greeceFlag,
     region: "Europa Południowa",
     population: "11 mln",
     area: "131 957 km²",
@@ -114,7 +130,7 @@ export const europeanCountries: Country[] = [
     id: "portugal",
     name: "Portugalia",
     capital: "Lizbona",
-    flag: "🇵🇹",
+    flag: portugalFlag,
     region: "Europa Zachodnia",
     population: "10 mln",
     area: "92 090 km²",
@@ -125,7 +141,7 @@ export const europeanCountries: Country[] = [
     id: "netherlands",
     name: "Holandia",
     capital: "Amsterdam",
-    flag: "🇳🇱",
+    flag: netherlandsFlag,
     region: "Europa Zachodnia",
     population: "17 mln",
     area: "41 543 km²",
@@ -136,7 +152,7 @@ export const europeanCountries: Country[] = [
     id: "belgium",
     name: "Belgia",
     capital: "Bruksela",
-    flag: "🇧🇪",
+    flag: belgiumFlag,
     region: "Europa Zachodnia",
     population: "11 mln",
     area: "30 528 km²",
@@ -147,7 +163,7 @@ export const europeanCountries: Country[] = [
     id: "austria",
     name: "Austria",
     capital: "Wiedeń",
-    flag: "🇦🇹",
+    flag: austriaFlag,
     region: "Europa Środkowa",
     population: "9 mln",
     area: "83 871 km²",
@@ -158,7 +174,7 @@ export const europeanCountries: Country[] = [
     id: "czech",
     name: "Czechy",
     capital: "Praga",
-    flag: "🇨🇿",
+    flag: czechFlag,
     region: "Europa Środkowa",
     population: "11 mln",
     area: "78 867 km²",
@@ -169,7 +185,7 @@ export const europeanCountries: Country[] = [
     id: "denmark",
     name: "Dania",
     capital: "Kopenhaga",
-    flag: "🇩🇰",
+    flag: denmarkFlag,
     region: "Europa Północna",
     population: "6 mln",
     area: "42 933 km²",
