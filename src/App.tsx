@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Learn from "./pages/Learn";
 import Quiz from "./pages/Quiz";
 import MapGame from "./pages/MapGame";
+import Flags from "./pages/Flags";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/learn" element={<Learn />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/map" element={<MapGame />} />
+        <Route path="/flags" element={<Flags />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

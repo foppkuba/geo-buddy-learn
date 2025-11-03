@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Brain, Map } from "lucide-react";
+import { BookOpen, Brain, Map, Flag } from "lucide-react";
 
 const Index = () => {
   return (
@@ -32,7 +32,7 @@ const Index = () => {
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           <Link to="/learn" className="block group">
             <Card className="h-full transition-all duration-300 hover:shadow-[var(--shadow-hover)] hover:scale-105 cursor-pointer">
               <CardHeader className="text-center pb-4">
@@ -117,6 +117,36 @@ const Index = () => {
                   <li className="flex items-start">
                     <span className="mr-2">🎮</span>
                     <span>Ucz się geografii poprzez zabawę</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/flags" className="block group">
+            <Card className="h-full transition-all duration-300 hover:shadow-[var(--shadow-hover)] hover:scale-105 cursor-pointer">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-300 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Flag className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl">Nauka Flag</CardTitle>
+                <CardDescription className="text-base">
+                  Poznaj flagi krajów!
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start">
+                    <span className="mr-2">🚩</span>
+                    <span>Zgaduj nazwy krajów po flagach</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">🎯</span>
+                    <span>4 odpowiedzi do wyboru</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">🏅</span>
+                    <span>Zdobywaj punkty za prawidłowe odpowiedzi</span>
                   </li>
                 </ul>
               </CardContent>
