@@ -148,7 +148,7 @@ const Quiz = () => {
 
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <div className="text-8xl mb-4">{question.flag}</div>
+            <img src={question.flag} alt={question.country} className="w-32 h-24 object-cover mx-auto rounded-lg shadow-md mb-4" />
             <CardTitle className="text-3xl mb-2">
               Jaka jest stolica {question.country}?
             </CardTitle>

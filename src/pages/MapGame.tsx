@@ -124,7 +124,7 @@ const MapGame = () => {
 
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <div className="text-7xl mb-3">{currentCountry.flag}</div>
+            <img src={currentCountry.flag} alt={currentCountry.name} className="w-32 h-24 object-cover mx-auto rounded-lg shadow-md mb-3" />
             <CardTitle className="text-3xl mb-2">
               Gdzie znajduje się {currentCountry.name}?
             </CardTitle>
