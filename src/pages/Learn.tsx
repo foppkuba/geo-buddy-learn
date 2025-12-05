@@ -38,7 +38,7 @@ const Learn = () => {
             >
               <div style={{ backfaceVisibility: "hidden" }}>
                 <CardHeader className="text-center pb-4">
-                  <div className="text-8xl mb-4">{country.flag}</div>
+                  <img src={country.flag} alt={`Flaga ${country.name}`} className="w-48 h-32 object-cover rounded-lg shadow-lg mb-4 mx-auto" />
                   <CardTitle className="text-4xl font-bold">{country.name}</CardTitle>
                   <CardDescription className="text-xl">Kliknij aby zobaczyć stolicę</CardDescription>
                 </CardHeader>
@@ -147,7 +147,7 @@ const Learn = () => {
               onClick={() => setSelectedCountry(country.id)}
             >
               <CardHeader className="text-center">
-                <div className="text-6xl mb-3">{country.flag}</div>
+                <img src={country.flag} alt={`Flaga ${country.name}`} className="w-24 h-16 object-cover rounded shadow mb-3 mx-auto" />
                 <CardTitle className="text-xl">{country.name}</CardTitle>
                 <CardDescription className="text-primary font-medium">
                   {country.capital}
