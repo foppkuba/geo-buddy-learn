@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { europeanCountries } from "@/data/countries";
@@ -16,21 +16,19 @@ const Flags = () => {
   const currentCountry = europeanCountries[currentIndex];
   
   // Generate 4 random options including the correct one
-  const getOptions = () => {
-    const options = [currentCountry.name];
+  const options = useMemo(() => {
+    const opts = [currentCountry.name];
     const otherCountries = europeanCountries.filter(c => c.id !== currentCountry.id);
     
-    while (options.length < 4) {
+    while (opts.length < 4) {
       const randomCountry = otherCountries[Math.floor(Math.random() * otherCountries.length)];
-      if (!options.includes(randomCountry.name)) {
-        options.push(randomCountry.name);
+      if (!opts.includes(randomCountry.name)) {
+        opts.push(randomCountry.name);
       }
     }
     
-    return options.sort(() => Math.random() - 0.5);
-  };
-
-  const [options] = useState(getOptions());
+    return opts.sort(() => Math.random() - 0.5);
+  }, [currentIndex]);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
