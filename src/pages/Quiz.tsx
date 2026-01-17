@@ -1,19 +1,31 @@
 import { useState, useEffect } from "react";
-import { europeanCountries } from "@/data/countries";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, RotateCcw } from "lucide-react";
+import { ArrowLeft, Trophy, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 
+// Typ danych surowych z Backendu
+interface CountryData {
+  name: string;
+  code: string;
+  capital: string;
+}
+
+// Typ pytania w Quizie
 interface Question {
   country: string;
   correctAnswer: string;
   options: string[];
-  flag: string;
+  flagCode: string; // Trzymamy kod, żeby wygenerować URL do flagi
 }
 
 const Quiz = () => {
+  // Stan na surowe dane z API (żeby nie pobierać ich przy każdym restarcie gry)
+  const [allCountries, setAllCountries] = useState<CountryData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Stan gry
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -21,22 +33,48 @@ const Quiz = () => {
   const [showResult, setShowResult] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
 
-  const generateQuestions = () => {
-    const shuffled = [...europeanCountries].sort(() => Math.random() - 0.5);
-    const quizQuestions: Question[] = shuffled.slice(0, 10).map(country => {
-      const otherCountries = europeanCountries.filter(c => c.id !== country.id);
+  // 1. Pobieranie danych przy wejściu na stronę
+  useEffect(() => {
+    fetch("/api/game/quiz-data")
+      .then((res) => res.json())
+      .then((data) => {
+        setAllCountries(data);
+        startNewGame(data); // Od razu startujemy grę jak przyjdą dane
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Błąd pobierania quizu:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // 2. Logika generowania pytań
+  const startNewGame = (sourceData: CountryData[] = allCountries) => {
+    if (sourceData.length < 4) return; // Zabezpieczenie: potrzeba min 4 krajów do losowania opcji
+
+    // Mieszamy kraje
+    const shuffled = [...sourceData].sort(() => Math.random() - 0.5);
+    
+    // Bierzemy max 10 pytań (lub mniej, jeśli krajów jest mało)
+    const gameCount = Math.min(10, shuffled.length);
+
+    const quizQuestions: Question[] = shuffled.slice(0, gameCount).map((targetCountry) => {
+      // Dla każdego pytania losujemy 3 błędne odpowiedzi (stolice innych państw)
+      const otherCountries = sourceData.filter((c) => c.code !== targetCountry.code);
+      
       const wrongAnswers = otherCountries
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
-        .map(c => c.capital);
+        .map((c) => c.capital);
       
-      const options = [...wrongAnswers, country.capital].sort(() => Math.random() - 0.5);
+      // Łączymy poprawną z błędnymi i mieszamy
+      const options = [...wrongAnswers, targetCountry.capital].sort(() => Math.random() - 0.5);
       
       return {
-        country: country.name,
-        correctAnswer: country.capital,
+        country: targetCountry.name,
+        correctAnswer: targetCountry.capital,
         options,
-        flag: country.flag,
+        flagCode: targetCountry.code,
       };
     });
     
@@ -47,10 +85,6 @@ const Quiz = () => {
     setSelectedAnswer(null);
     setIsAnswered(false);
   };
-
-  useEffect(() => {
-    generateQuestions();
-  }, []);
 
   const handleAnswer = (answer: string) => {
     if (isAnswered) return;
@@ -73,10 +107,30 @@ const Quiz = () => {
     }
   };
 
-  if (questions.length === 0) {
-    return <div className="min-h-screen flex items-center justify-center">Ładowanie...</div>;
+  // --- UI: Ładowanie ---
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p>Przygotowywanie pytań...</p>
+      </div>
+    );
   }
 
+  // --- UI: Błąd (za mało danych) ---
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+        <h2 className="text-xl font-bold mb-2">Brak danych do quizu</h2>
+        <p className="mb-4">Potrzebujemy przynajmniej 4 krajów w bazie, aby uruchomić quiz.</p>
+        <Link to="/">
+            <Button>Wróć do menu</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // --- UI: Wyniki ---
   if (showResult) {
     const percentage = (score / questions.length) * 100;
     return (
@@ -103,7 +157,7 @@ const Quiz = () => {
                 : "Nie poddawaj się! Spróbuj jeszcze raz i zobacz jak się poprawisz! 💪"}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={generateQuestions} size="lg">
+              <Button onClick={() => startNewGame()} size="lg">
                 <RotateCcw className="mr-2 h-5 w-5" />
                 Zagraj ponownie
               </Button>
@@ -120,6 +174,7 @@ const Quiz = () => {
     );
   }
 
+  // --- UI: Gra ---
   const question = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
@@ -148,9 +203,13 @@ const Quiz = () => {
 
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <img src={question.flag} alt={question.country} className="w-32 h-24 object-cover mx-auto rounded-lg shadow-md mb-4" />
+            <img 
+                src={`https://flagcdn.com/w320/${question.flagCode.toLowerCase()}.png`} 
+                alt={`Flaga ${question.country}`} 
+                className="w-48 h-auto object-cover mx-auto rounded-lg shadow-md mb-4 border" 
+            />
             <CardTitle className="text-3xl mb-2">
-              Jaka jest stolica {question.country}?
+              Jaka jest stolica kraju: {question.country}?
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -162,7 +221,7 @@ const Quiz = () => {
               
               if (isAnswered) {
                 if (isCorrect) {
-                  buttonVariant = "secondary";
+                  buttonVariant = "secondary"; // Zielony (zależnie od theme)
                 } else if (isSelected && !isCorrect) {
                   buttonVariant = "destructive";
                 }
@@ -172,7 +231,9 @@ const Quiz = () => {
                 <Button
                   key={index}
                   variant={buttonVariant}
-                  className="w-full h-auto p-6 text-lg justify-start transition-all duration-300"
+                  className={`w-full h-auto p-6 text-lg justify-start transition-all duration-300 ${
+                    isAnswered && isCorrect ? "bg-green-100 hover:bg-green-200 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-500" : ""
+                  }`}
                   onClick={() => handleAnswer(option)}
                   disabled={isAnswered}
                 >
@@ -192,7 +253,7 @@ const Quiz = () => {
           <Button 
             onClick={handleNext} 
             size="lg" 
-            className="w-full"
+            className="w-full animate-in fade-in zoom-in duration-300"
           >
             {currentQuestion < questions.length - 1 ? "Następne pytanie" : "Zobacz wynik"}
           </Button>
