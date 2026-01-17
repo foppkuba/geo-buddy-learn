@@ -13,7 +13,7 @@ git pull
 
 echo ">>> 2. Buduję Frontend..."
 cd "$FRONTEND_DIR"
-bun install
+bun install --frozen-lockfile
 bun run build
 
 echo ">>> 3. Wystawiam Frontend na świat..."
