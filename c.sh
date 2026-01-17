@@ -50,3 +50,6 @@ else
     echo ">>> [BŁĄD] Budowanie backendu nie powiodło się! Nie restartuję serwera."
     exit 1
 fi
+
+# Przeładowanie Apache jest potrzebne po zmianach w backendzie
+sudo systemctl reload apache2
