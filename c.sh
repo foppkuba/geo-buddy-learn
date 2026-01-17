@@ -22,6 +22,29 @@ sudo cp -r dist/* "$PUBLIC_HTML"/
 echo ">>> 4. Restartuję Backend (jeśli były zmiany)..."
 cd "$BACKEND_DIR"
 
+# Przeładowanie Apache jest potrzebne po zmianach we frontendzie
 sudo systemctl reload apache2
 
-echo ">>> GOTOWE!"
+echo ">>> 4. Backend (Spring Boot)..."
+cd "$BACKEND_DIR"
+
+# Upewniamy się, że skrypt Mavena jest wykonywalny
+chmod +x mvnw
+
+echo "   -> Budowanie pliku .jar (Maven)..."
+# clean package: czyści stare śmieci i buduje nowy plik
+# -DskipTests: pomija testy, żeby było szybciej na serwerze
+./mvnw clean package -DskipTests
+
+# Sprawdzamy, czy Maven zakończył sukcesem (kod 0)
+if [ $? -eq 0 ]; then
+    echo "   -> Budowanie udane! Restartuję usługę Java..."
+    
+    # To jest ten moment, kiedy nowa wersja backendu wstaje
+    sudo systemctl restart $BACKEND_SERVICE
+    
+    echo ">>> GOTOWE! Wszystko zaktualizowane."
+else
+    echo ">>> [BŁĄD] Budowanie backendu nie powiodło się! Nie restartuję serwera."
+    exit 1
+fi
