@@ -17,7 +17,7 @@ bun run build
 echo ">>> 3. Wystawiam Frontend na świat..."
 
 sudo rm -rf "$PUBLIC_HTML"/*
-sudo cp -r * "$PUBLIC_HTML"/
+sudo cp -r dist/* "$PUBLIC_HTML"/
 
 echo ">>> 4. Restartuję Backend (jeśli były zmiany)..."
 cd "$BACKEND_DIR"
