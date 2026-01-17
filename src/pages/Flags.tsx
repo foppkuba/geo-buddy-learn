@@ -1,11 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import { europeanCountries } from "@/data/countries"; <--- USUWAMY TO
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, X, Loader2 } from "lucide-react";
 
-// Definicja typu danych z Javy
 interface Country {
   name: string;
   code: string;
@@ -94,7 +92,6 @@ const Flags = () => {
     setShowResult(false);
     setSelectedAnswer(null);
     setAnsweredQuestions(0);
-    // Opcjonalnie: Możesz tu znowu zrobić fetch, żeby przetasować pytania
   };
 
   // --- EKRAN ŁADOWANIA ---
@@ -163,7 +160,6 @@ const Flags = () => {
         <Card className="p-8">
           <CardContent className="space-y-8">
             <div className="text-center space-y-4">
-              {/* ZMIANA: Obrazek z CDN na podstawie kodu kraju */}
               <img 
                 src={`https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`} 
                 alt={`Flaga`}
