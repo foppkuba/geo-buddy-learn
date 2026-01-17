@@ -27,8 +27,9 @@ cd "$BACKEND_DIR"
 # Przeładowanie Apache jest potrzebne po zmianach we frontendzie
 sudo systemctl reload apache2
 
-echo ">>> 4. Backend (Spring Boot)..."
+echo ">>> 4. Pobieram zmiany z backendu (Spring Boot)..."
 cd "$BACKEND_DIR"
+git pull
 
 # Upewniamy się, że skrypt Mavena jest wykonywalny
 chmod +x mvnw
