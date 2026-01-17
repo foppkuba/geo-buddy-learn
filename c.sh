@@ -8,7 +8,7 @@ PUBLIC_HTML="/var/www/html"
 BACKEND_SERVICE="app-backend"
 
 echo ">>> 1. Pobieram zmiany z Gita..."
-cd "$PROJECT_DIR"
+cd "$FRONTEND_DIR"
 git pull
 
 echo ">>> 2. Buduję Frontend..."
