@@ -22,4 +22,6 @@ sudo cp -r dist/* "$PUBLIC_HTML"/
 echo ">>> 4. Restartuję Backend (jeśli były zmiany)..."
 cd "$BACKEND_DIR"
 
+sudo systemctl reload apache2
+
 echo ">>> GOTOWE!"
