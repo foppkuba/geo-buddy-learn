@@ -5,6 +5,8 @@ FRONTEND_DIR="$PROJECT_DIR/frontend"
 BACKEND_DIR="$PROJECT_DIR/backend"
 PUBLIC_HTML="/var/www/html"
 
+BACKEND_SERVICE="app-backend"
+
 echo ">>> 1. Pobieram zmiany z Gita..."
 cd "$PROJECT_DIR"
 git pull
