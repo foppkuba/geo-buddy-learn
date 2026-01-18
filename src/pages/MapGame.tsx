@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trophy, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import SimpleMapGame from "@/components/ui/GoogleMapGame";
+import SimpleMapGame from "@/components/GoogleMapGame";
 
 interface BackendCountry {
   name: string;
