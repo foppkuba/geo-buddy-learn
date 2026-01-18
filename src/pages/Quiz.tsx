@@ -4,13 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trophy, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-
-// Typ danych surowych z Backendu
-interface CountryData {
-  name: string;
-  code: string;
-  capital: string;
-}
+import { Country } from "@/types";
 
 // Typ pytania w Quizie
 interface Question {
@@ -22,7 +16,7 @@ interface Question {
 
 const Quiz = () => {
   // Stan na surowe dane z API (żeby nie pobierać ich przy każdym restarcie gry)
-  const [allCountries, setAllCountries] = useState<CountryData[]>([]);
+  const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Stan gry
@@ -49,7 +43,7 @@ const Quiz = () => {
   }, []);
 
   // 2. Logika generowania pytań
-  const startNewGame = (sourceData: CountryData[] = allCountries) => {
+  const startNewGame = (sourceData: Country[] = allCountries) => {
     if (sourceData.length < 4) return; // Zabezpieczenie: potrzeba min 4 krajów do losowania opcji
 
     // Mieszamy kraje

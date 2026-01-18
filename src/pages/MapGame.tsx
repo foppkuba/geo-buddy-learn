@@ -5,14 +5,9 @@ import { ArrowLeft, Trophy, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 import SimpleMapGame from "@/components/GoogleMapGame";
+import { Country } from "@/types";
 
-interface BackendCountry {
-  name: string;
-  code: string;
-  capital: string;
-}
-
-interface GameCountry extends BackendCountry {
+interface GameCountry extends Country {
   flag: string;
 }
 
@@ -33,7 +28,7 @@ const MapGame = () => {
   useEffect(() => {
     fetch("/api/game/quiz-data")
       .then((res) => res.json())
-      .then((data: BackendCountry[]) => {
+      .then((data: Country[]) => {
         
         // Krok A: Formatowanie danych (dodanie flagi)
         const formattedData: GameCountry[] = data.map((item) => ({

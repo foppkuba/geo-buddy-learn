@@ -3,12 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, X, Loader2 } from "lucide-react";
-
-interface Country {
-  name: string;
-  code: string;
-  capital: string;
-}
+import { Country } from "@/types";
 
 const Flags = () => {
   const navigate = useNavigate();

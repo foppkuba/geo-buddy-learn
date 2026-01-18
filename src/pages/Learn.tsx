@@ -3,28 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-// 1. Definicja typu danych
-interface Country {
-  name: string;
-  code: string;
-  capital: string;
-  region?: string;
-  population?: string;
-  area?: string;
-  languages?: string[];
-  funFact?: string;
-}
+import { Country } from "@/types";
 
 const Learn = () => {
-  // 2. Stan na dane z API
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedCountryCode, setSelectedCountryCode] = useState<string | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // 3. Pobieranie danych z Backendu
   useEffect(() => {
     fetch("/api/game/quiz-data")
       .then((res) => res.json())
