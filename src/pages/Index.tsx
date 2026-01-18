@@ -41,7 +41,7 @@ const Index = () => {
                 </div>
                 <CardTitle className="text-2xl">Biblioteka Krajów</CardTitle>
                 <CardDescription className="text-base">
-                  Poznaj 15 krajów europejskich
+                  Poznaj 40 krajów europejskich
                 </CardDescription>
               </CardHeader>
               <CardContent>
