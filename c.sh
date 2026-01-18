@@ -73,6 +73,6 @@ fi
 # ==========================================
 # 3. FINALIZACJA
 # ==========================================
-sudo systemctl reload apache2
+sudo systemctl reload nginx
 
 echo -e "${GREEN}>>> GOTOWE! Deploy zakończony pomyślnie.${NC}"
