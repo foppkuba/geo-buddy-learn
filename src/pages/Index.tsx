@@ -163,11 +163,11 @@ const Index = () => {
           </h2>
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-5xl font-bold text-primary mb-2">15</div>
+              <div className="text-5xl font-bold text-primary mb-2">40</div>
               <p className="text-muted-foreground">Krajów europejskich</p>
             </div>
             <div>
-              <div className="text-5xl font-bold text-secondary mb-2">15</div>
+              <div className="text-5xl font-bold text-secondary mb-2">40</div>
               <p className="text-muted-foreground">Stolic do zapamiętania</p>
             </div>
             <div>

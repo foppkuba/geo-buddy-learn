@@ -21,7 +21,6 @@ const Learn = () => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Zmieniamy ID na Code (np. "PL", "DE"), bo to jest unikalne w API
   const [selectedCountryCode, setSelectedCountryCode] = useState<string | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -30,7 +29,8 @@ const Learn = () => {
     fetch("/api/game/quiz-data")
       .then((res) => res.json())
       .then((data) => {
-        setCountries(data);
+        const sortedData = data.sort((a, b) => a.name.localeCompare(b.name, 'pl'));
+        setCountries(sortedData);
         setLoading(false);
       })
       .catch((err) => {
