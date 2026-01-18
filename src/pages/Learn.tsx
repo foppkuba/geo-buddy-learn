@@ -185,7 +185,7 @@ const Learn = () => {
             Biblioteka Krajów
           </h1>
           <p className="text-xl text-muted-foreground">
-            Poznaj kraje z naszego Backendu Java!
+            Poznaj kraje!
           </p>
         </div>
 
