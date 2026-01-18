@@ -19,24 +19,18 @@ echo -e "${YELLOW}>>> START DEPLOYU...${NC}"
 # ==========================================
 cd "$FRONTEND_DIR"
 
-# Pobieramy argumenty przekazane przez skrypt nadrzędny (jeśli istnieją)
 EXTERNAL_OLD_HASH=$1
 EXTERNAL_NEW_HASH=$2
 
 if [ -n "$EXTERNAL_OLD_HASH" ]; then
-    # SCENARIUSZ A: Skrypt został uruchomiony przez wrapper
-    echo -e "${YELLOW}>>> [Frontend] Skrypt nadrzędny już zaktualizował kod.${NC}"
     OLD_HASH="$EXTERNAL_OLD_HASH"
     NEW_HASH="$EXTERNAL_NEW_HASH"
 else
-    # SCENARIUSZ B: Skrypt uruchomiony ręcznie (./c.sh)
-    echo -e "${YELLOW}>>> [Frontend] Sprawdzam zmiany w GIT (tryb ręczny)...${NC}"
     OLD_HASH=$(git rev-parse HEAD)
     git pull
     NEW_HASH=$(git rev-parse HEAD)
 fi
 
-# Porównanie hashów (działa dla obu scenariuszy tak samo)
 if [ "$OLD_HASH" != "$NEW_HASH" ] || [ "$3" == "--force" ]; then
     echo -e "${GREEN}>>> [Frontend] Wykryto zmiany ($OLD_HASH -> $NEW_HASH)! Budowanie...${NC}"
     
