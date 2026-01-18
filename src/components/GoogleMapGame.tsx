@@ -12,7 +12,7 @@ interface SimpleMapGameProps {
 }
 
 // Mapowanie polskich nazw na nazwy krajów w GeoJSON
-const countryNameMap: { [key: string]: string[] } = {
+  const countryNameMap: { [key: string]: string[] } = {
   "Polska": ["Poland"],
   "Niemcy": ["Germany"],
   "Francja": ["France"],
@@ -21,13 +21,36 @@ const countryNameMap: { [key: string]: string[] } = {
   "Wielka Brytania": ["United Kingdom"],
   "Szwecja": ["Sweden"],
   "Norwegia": ["Norway"],
+  "Dania": ["Denmark"],
+  "Finlandia": ["Finland"],
+  "Islandia": ["Iceland"],
+  "Czechy": ["Czech Republic", "Czechia"],
+  "Słowacja": ["Slovakia"],
+  "Węgry": ["Hungary"],
+  "Austria": ["Austria"],
+  "Szwajcaria": ["Switzerland"],
+  "Litwa": ["Lithuania"],
+  "Łotwa": ["Latvia"],
+  "Estonia": ["Estonia"],
+  "Ukraina": ["Ukraine"],
+  "Białoruś": ["Belarus"],
+  "Mołdawia": ["Moldova"],
+  "Rumunia": ["Romania"],
+  "Bułgaria": ["Bulgaria"],
   "Grecja": ["Greece"],
   "Portugalia": ["Portugal"],
+  "Chorwacja": ["Croatia"],
+  "Słowenia": ["Slovenia"],
+  "Serbia": ["Serbia"],
+  "Bośnia i Hercegowina": ["Bosnia and Herz."],
+  "Czarnogóra": ["Montenegro"],
+  "Albania": ["Albania"],
+  "Macedonia Północna": ["Macedonia", "North Macedonia"],
   "Holandia": ["Netherlands"],
   "Belgia": ["Belgium"],
-  "Austria": ["Austria"],
-  "Czechy": ["Czech Republic", "Czechia"],
-  "Dania": ["Denmark"],
+  "Irlandia": ["Ireland"],
+  "Luksemburg": ["Luxembourg"],
+  "Turcja": ["Turkey"]
 };
 
 const SimpleMapGame = ({ currentCountry, onCountryClick, isCorrect }: SimpleMapGameProps) => {

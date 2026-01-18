@@ -1,44 +1,75 @@
 import { useState, useEffect } from "react";
-import { europeanCountries } from "@/data/countries";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, RotateCcw } from "lucide-react";
+import { ArrowLeft, Trophy, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import SimpleMapGame from "@/components/GoogleMapGame";
+import SimpleMapGame from "@/components/ui/GoogleMapGame";
+
+interface BackendCountry {
+  name: string;
+  code: string;
+  capital: string;
+}
+
+interface GameCountry extends BackendCountry {
+  flag: string;
+}
 
 const MapGame = () => {
+  const [allCountries, setAllCountries] = useState<GameCountry[]>([]);
+  const [shuffledCountries, setShuffledCountries] = useState<GameCountry[]>([]);
   const [currentCountryIndex, setCurrentCountryIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [shuffledCountries, setShuffledCountries] = useState(europeanCountries);
+  const [loading, setLoading] = useState(true);
 
-  const startNewGame = () => {
-    setShuffledCountries([...europeanCountries].sort(() => Math.random() - 0.5).slice(0, 10));
+  // 1. Pobieranie danych z Backendu
+  useEffect(() => {
+    fetch("/api/game/quiz-data")
+      .then((res) => res.json())
+      .then((data: BackendCountry[]) => {
+        const formattedData: GameCountry[] = data.map((item) => ({
+          ...item,
+          flag: `https://flagcdn.com/w320/${item.code.toLowerCase()}.png`
+        }));
+        
+        setAllCountries(formattedData);
+        startNewGame(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Błąd pobierania danych:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const startNewGame = (sourceData: GameCountry[]) => {
+    if (sourceData.length === 0) return;
+    // Losujemy 10 krajów do gry
+    const gameSet = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 10);
+    setShuffledCountries(gameSet);
     setCurrentCountryIndex(0);
     setScore(0);
     setGameOver(false);
-    setSelectedCountry(null);
     setIsCorrect(null);
   };
 
-  useEffect(() => {
-    startNewGame();
-  }, []);
+  const handleRestart = () => {
+    startNewGame(allCountries);
+  };
 
   const currentCountry = shuffledCountries[currentCountryIndex];
-  const progress = ((currentCountryIndex + 1) / shuffledCountries.length) * 100;
+  
+  const progress = shuffledCountries.length > 0 
+    ? ((currentCountryIndex + 1) / shuffledCountries.length) * 100 
+    : 0;
 
-  const handleCountryClick = (countryName: string) => {
+  const handleCountryClick = (clickedCountryName: string) => {
     if (isCorrect !== null) return;
 
-    setSelectedCountry(countryName);
-    
-    if (countryName === currentCountry.name) {
+    if (clickedCountryName === currentCountry.name) {
       setIsCorrect(true);
       setScore(score + 1);
     } else {
@@ -49,13 +80,22 @@ const MapGame = () => {
   const handleNext = () => {
     if (currentCountryIndex < shuffledCountries.length - 1) {
       setCurrentCountryIndex(currentCountryIndex + 1);
-      setSelectedCountry(null);
       setIsCorrect(null);
     } else {
       setGameOver(true);
     }
   };
 
+  // --- EKRAN ŁADOWANIA ---
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // --- EKRAN KONIEC GRY ---
   if (gameOver) {
     const percentage = (score / shuffledCountries.length) * 100;
     return (
@@ -74,15 +114,8 @@ const MapGame = () => {
             <div className="text-5xl font-bold text-secondary">
               {percentage.toFixed(0)}%
             </div>
-            <p className="text-lg">
-              {percentage >= 80 
-                ? "Fantastycznie! Znasz mapę Europy jak własną kieszeń! 🎉" 
-                : percentage >= 60 
-                ? "Świetnie! Jeszcze kilka rund i będziesz mistrzem mapy! 🌟"
-                : "Dobry start! Kolejna gra i z pewnością się poprawisz! 💪"}
-            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={startNewGame} size="lg" variant="default">
+              <Button onClick={handleRestart} size="lg">
                 <RotateCcw className="mr-2 h-5 w-5" />
                 Zagraj ponownie
               </Button>
@@ -99,6 +132,9 @@ const MapGame = () => {
     );
   }
 
+  if (!currentCountry) return <div>Błąd danych.</div>;
+
+  // --- EKRAN GRY ---
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary/10 via-background to-primary/10 p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
@@ -124,9 +160,13 @@ const MapGame = () => {
 
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <img src={currentCountry.flag} alt={currentCountry.name} className="w-32 h-24 object-cover mx-auto rounded-lg shadow-md mb-3" />
+            <img 
+               src={currentCountry.flag} 
+               alt={currentCountry.name} 
+               className="w-32 h-24 object-cover mx-auto rounded-lg shadow-md mb-3 border" 
+            />
             <CardTitle className="text-3xl mb-2">
-              Gdzie znajduje się {currentCountry.name}?
+              Gdzie leży: {currentCountry.name}?
             </CardTitle>
             <CardDescription className="text-lg">
               Kliknij na mapie, aby wybrać kraj
@@ -145,14 +185,12 @@ const MapGame = () => {
                   ? "bg-secondary/10 border-2 border-secondary" 
                   : "bg-destructive/10 border-2 border-destructive"
               }`}>
-                <div className="text-5xl mb-3">
-                  {isCorrect ? "✓" : "✗"}
-                </div>
+                <div className="text-5xl mb-3">{isCorrect ? "✓" : "✗"}</div>
                 <p className="text-xl font-semibold mb-2">
-                  {isCorrect ? "Brawo! Poprawna odpowiedź!" : "Niestety, to nie ten kraj"}
+                  {isCorrect ? "Brawo! To poprawny kraj!" : "Niestety, to nie tu."}
                 </p>
                 <p className="text-muted-foreground">
-                  {currentCountry.name} - {currentCountry.capital}
+                  Szukaliśmy: {currentCountry.name} - {currentCountry.capital}
                 </p>
               </div>
             )}
@@ -160,11 +198,7 @@ const MapGame = () => {
         </Card>
 
         {isCorrect !== null && (
-          <Button 
-            onClick={handleNext} 
-            size="lg" 
-            className="w-full"
-          >
+          <Button onClick={handleNext} size="lg" className="w-full">
             {currentCountryIndex < shuffledCountries.length - 1 ? "Następny kraj" : "Zobacz wynik"}
           </Button>
         )}
