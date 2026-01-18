@@ -16,6 +16,10 @@ interface GameCountry extends BackendCountry {
   flag: string;
 }
 
+// --- LISTA ZAKAZANYCH MIKROPAŃSTW ---
+
+const EXCLUDED_CODES = ["MT", "MC", "VA", "SM", "AD", "LI"];
+
 const MapGame = () => {
   const [allCountries, setAllCountries] = useState<GameCountry[]>([]);
   const [shuffledCountries, setShuffledCountries] = useState<GameCountry[]>([]);
@@ -30,13 +34,19 @@ const MapGame = () => {
     fetch("/api/game/quiz-data")
       .then((res) => res.json())
       .then((data: BackendCountry[]) => {
+        
+        // Krok A: Formatowanie danych (dodanie flagi)
         const formattedData: GameCountry[] = data.map((item) => ({
           ...item,
           flag: `https://flagcdn.com/w320/${item.code.toLowerCase()}.png`
         }));
         
-        setAllCountries(formattedData);
-        startNewGame(formattedData);
+        const playableCountries = formattedData.filter(country => 
+            !EXCLUDED_CODES.includes(country.code)
+        );
+
+        setAllCountries(playableCountries);
+        startNewGame(playableCountries);
         setLoading(false);
       })
       .catch((err) => {
