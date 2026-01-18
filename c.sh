@@ -18,24 +18,35 @@ echo -e "${YELLOW}>>> START DEPLOYU...${NC}"
 # 1. FRONTEND
 # ==========================================
 cd "$FRONTEND_DIR"
-echo -e "${YELLOW}>>> [Frontend] Sprawdzam zmiany w GIT...${NC}"
 
-# Pobieramy hash obecnego commita
-OLD_HASH=$(git rev-parse HEAD)
-git pull
-NEW_HASH=$(git rev-parse HEAD)
+# Pobieramy argumenty przekazane przez skrypt nadrzędny (jeśli istnieją)
+EXTERNAL_OLD_HASH=$1
+EXTERNAL_NEW_HASH=$2
 
-if [ "$OLD_HASH" != "$NEW_HASH" ] || [ "$1" == "--force" ]; then
-    echo -e "${GREEN}>>> [Frontend] Wykryto zmiany! Budowanie nowej wersji...${NC}"
+if [ -n "$EXTERNAL_OLD_HASH" ]; then
+    # SCENARIUSZ A: Skrypt został uruchomiony przez wrapper
+    echo -e "${YELLOW}>>> [Frontend] Skrypt nadrzędny już zaktualizował kod.${NC}"
+    OLD_HASH="$EXTERNAL_OLD_HASH"
+    NEW_HASH="$EXTERNAL_NEW_HASH"
+else
+    # SCENARIUSZ B: Skrypt uruchomiony ręcznie (./c.sh)
+    echo -e "${YELLOW}>>> [Frontend] Sprawdzam zmiany w GIT (tryb ręczny)...${NC}"
+    OLD_HASH=$(git rev-parse HEAD)
+    git pull
+    NEW_HASH=$(git rev-parse HEAD)
+fi
+
+# Porównanie hashów (działa dla obu scenariuszy tak samo)
+if [ "$OLD_HASH" != "$NEW_HASH" ] || [ "$3" == "--force" ]; then
+    echo -e "${GREEN}>>> [Frontend] Wykryto zmiany ($OLD_HASH -> $NEW_HASH)! Budowanie...${NC}"
     
     bun install
     bun run build
 
-    echo -e "${GREEN}>>> [Frontend] Podmieniam pliki na serwerze (bez downtime)...${NC}"
-    
+    echo -e "${GREEN}>>> [Frontend] Podmieniam pliki na serwerze...${NC}"
     sudo rsync -av --delete dist/ "$PUBLIC_HTML"/
 else
-    echo -e "${GREEN}>>> [Frontend] Brak zmian. Pomijam budowanie.${NC}"
+    echo -e "${GREEN}>>> [Frontend] Brak zmian w kodzie. Pomijam budowanie.${NC}"
 fi
 
 # ==========================================
