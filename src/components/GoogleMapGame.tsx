@@ -82,7 +82,7 @@ const SimpleMapGame = ({ currentCountry, onCountryClick, isCorrect }: SimpleMapG
     const isSelected = geoName === selectedCountry;
     const isHovered = geoName === hoveredCountry;
 
-    let fill = "hsl(var(--muted))";
+    let fill = undefined;
     
     if (isCorrect !== null && isTarget) {
       fill = "hsl(142 76% 36%)"; // green for correct answer
@@ -130,6 +130,7 @@ const SimpleMapGame = ({ currentCountry, onCountryClick, isCorrect }: SimpleMapG
                 onMouseLeave={() => {
                   setHoveredCountry(null);
                 }}
+                className="fill-slate-300 stroke-white stroke-[0.5] dark:fill-slate-800 dark:stroke-slate-700 focus:outline-none"
                 style={{
                   default: getCountryStyle(geo),
                   hover: getCountryStyle(geo),
